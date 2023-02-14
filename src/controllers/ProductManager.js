@@ -1,16 +1,7 @@
-
-
 import {promises as fs} from 'fs'
-
-class Product {
-    constructor(nombre, descripcion, precio, code, stock, img) {
-        this.id = Product.addId()
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.precio = precio;
-        this.code = code;
-        this.stock = stock;
-        this.img = img;
+export class ProductManager {
+    constructor(path) {
+        this.path = path
     }
 
     static addId(){
@@ -21,23 +12,7 @@ class Product {
         }
         return this.idIncrement
     }
-}
-
-//Creamos los productos de base
-const p1 = new Product ("Zapatillas","Zapatillas urbanas, color Negro, talle 38",6500,244,1,[]);
-const p2 = new Product ("Sandalias","Sandalias de plataforma, color Suela, talle 38",5800,245,2,[]);
-const p3 = new Product ("Sandalias","Sandalias de plataforma, color Negro, talle 36",5900,247,3,[]);
-const p4 = new Product ("Zapatillas","Zapatillas urbanas, color Blanco, talle 37",4500,246,4,[]);
-
-
-
-export class ProductManager {
-    constructor(path) {
-        this.path = path
-    }
-
     addProduct = async (product,imgPath) => {
-        //Validar que todos los campos sean completados que la propiedad "code" no esté repetida.
         const read = await fs.readFile(this.path, 'utf-8');
         const data = JSON.parse(read);
         const prodCode = data.map((prod) => prod.code);
@@ -50,7 +25,7 @@ export class ProductManager {
             if (imgPath) {
                 product.thumbnail = imgPath;
             }            
-            const nuevoProducto = {id: Product.addId(), ...product};
+            const nuevoProducto = {id: product.addId(), ...product};
             data.push(nuevoProducto);
             await fs.writeFile(this.path, JSON.stringify(data), 'utf-8')
             return console.log(`El producto con id: ${nuevoProducto.id} ha sido agregado.`) 
