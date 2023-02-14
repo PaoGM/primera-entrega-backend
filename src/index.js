@@ -23,7 +23,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-app.use('/static', express.static(__dirname))
+app.use('/static', express.static(__dirname + '/public'))
 app.use('/api/products', routerProduct)
 app.use('/api/carts', routerCart)
 app.post('/upload',upload.single('product'), (req,res) => {
