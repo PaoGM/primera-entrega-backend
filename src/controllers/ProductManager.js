@@ -13,6 +13,7 @@ export class ProductManager {
         return this.idIncrement
     }
     addProduct = async (product,imgPath) => {
+        //Validar que todos los campos sean completados que la propiedad "code" no esté repetida.
         const read = await fs.readFile(this.path, 'utf-8');
         const data = JSON.parse(read);
         const prodCode = data.map((prod) => prod.code);
@@ -84,19 +85,5 @@ export class ProductManager {
         } else {
             return "Producto no encontrado"
         }
-    }
-
-    
-    async createJson() {
-        
-        await fs.writeFile(this.path, "[]");
-    }
-
-    async createProducts() {
-    
-    await this.addProduct(p1, ['../public/img/D_NQ_NP_698140-MLA53257761242_012023-W.jpg']);
-    await this.addProduct(p2, ['../public/img/D_NQ_NP_735116-MLA44776430902_022021-O.jpg']);
-    await this.addProduct(p3, ['../public/img/D_NQ_NP_645391-MLA43793189919_102020-O.jpg']);
-    await this.addProduct(p4, ['../public/img/D_NQ_NP_935953-MLA49703675436_042022-O.jpg']);
     }
 }
