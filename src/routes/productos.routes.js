@@ -33,4 +33,4 @@ routerProduct.put('/:id', async (req, res) => {
     res.send(mensaje)
 })
 
-export default routerProduct
+export default routerProduct;

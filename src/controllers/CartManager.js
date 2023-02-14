@@ -43,7 +43,7 @@ export class CartManager {
             if (carts[cartIndex]) {
                 return carts[cartIndex]
             } else {
-                throw `Carrito con ID: ${cart.id} no encontrado.`
+                throw `Carrito con ID: ${carts.id} no encontrado.`
             }
         } catch {
             return "Carrito no encontrado"
