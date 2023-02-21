@@ -27,6 +27,7 @@ app.use('/static', express.static(__dirname + '/public'))
 app.use('/api/products', routerProduct)
 app.use('/api/carts', routerCart)
 app.post('/upload',upload.single('product'), (req,res) => {
+    console.log(req.body)
     console.log(req.file)
     res.send("Imagen subida")
 })

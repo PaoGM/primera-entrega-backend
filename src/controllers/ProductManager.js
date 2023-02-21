@@ -1,68 +1,47 @@
-import {promises as fs} from 'fs'
+import { promises as fs } from 'fs'
+
 export class ProductManager {
     constructor(path) {
         this.path = path
     }
 
-    static addId(){
-        if (this.idIncrement) {
-            this.idIncrement++
-        } else {
-            this.idIncrement = 1
+    static incrementarID(idAnterior) {
+        if (!idAnterior) {
+            idAnterior = 10;
         }
-        return this.idIncrement
-    }
-    addProduct = async (product,imgPath) => {
-        //Validar que todos los campos sean completados que la propiedad "code" no esté repetida.
-        const read = await fs.readFile(this.path, 'utf-8');
-        const data = JSON.parse(read);
-        const prodCode = data.map((prod) => prod.code);
-        const prodExist = prodCode.includes(product.code); 
-        if (prodExist) {
-            return console.log (`El código ${product.code} ya existe. Ingrese uno diferente.`)
-        } else if (Object.values(product).includes("") || Object.values(product).includes(null)) {
-            return console.log("Todos los campos deben ser completados.");
-        } else {
-            if (imgPath) {
-                product.thumbnail = imgPath;
-            }            
-            const nuevoProducto = {id: product.addId(), ...product};
-            data.push(nuevoProducto);
-            await fs.writeFile(this.path, JSON.stringify(data), 'utf-8')
-            return console.log(`El producto con id: ${nuevoProducto.id} ha sido agregado.`) 
-        }
+        return idAnterior + 1;
     }
 
-    getProducts = async () => {
+    async addProduct(producto) {
+        const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
+        producto.id = ProductManager.incrementarID()
+        prods.push(producto)
+        await fs.writeFile(this.path, JSON.stringify(prods))
+        return "Producto creado"
+    }
+    async getProducts() {
         try {
-            const read = await fs.readFile(this.path, 'utf-8')
-            const prods = await JSON.parse(read)
-            if (prods.length != 0) {
-                console.log("Listado de productos:");
-                return prods
-            } 
-        } catch {
-            await this.createJson();
-            await this.createProducts();
-            return "Productos iniciales creados."
+            const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
+            return prods
+        } catch (error) {
+            return error
         }
+
     }
 
-    getProductById = async (id) => {
+    async getProductById(id) {
         const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
-        const findProduct = prods.find((prod) => prod.id === parseInt(id));
-        if (findProduct) {
-            console.log("Se ha encontrado el siguiente producto:")
-            return findProduct;
+        if (prods.some(prod => prod.id === parseInt(id))) {
+            return prods.find(prod => prod.id === parseInt(id))
         } else {
-            return console.log("Product Not found");
+            return "Producto no encontrado"
         }
     }
 
-    updateProduct = async (id, {nombre, descripcion, precio, img, code, stock}) => {
+    async updateProduct(id, { nombre, descripcion, precio, img, code, stock }) {
         const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
-        if(prods.some(prod => prod.id === parseInt(id))) {
-            let index= prods.findIndex(prod => prod.id === parseInt(id))
+        if (prods.some(prod => prod.id === parseInt(id))) {
+            let index = prods.findIndex(prod => prod.id === parseInt(id))
             prods[index].nombre = nombre
             prods[index].descripcion = descripcion
             prods[index].precio = precio
@@ -70,15 +49,15 @@ export class ProductManager {
             prods[index].code = code
             prods[index].stock = stock
             await fs.writeFile(this.path, JSON.stringify(prods))
-            return "Producto actualizado" 
+            return "Producto actualizado"
         } else {
             return "Producto no encontrado"
         }
     }
 
-    deleteProduct = async (id) => {
+    async deleteProduct(id) {
         const prods = JSON.parse(await fs.readFile(this.path, 'utf-8'))
-        if(prods.some(prod => prod.id === parseInt(id))) {
+        if (prods.some(prod => prod.id === parseInt(id))) {
             const prodsFiltrados = prods.filter(prod => prod.id !== parseInt(id))
             await fs.writeFile(this.path, JSON.stringify(prodsFiltrados))
             return "Producto eliminado"
@@ -86,4 +65,5 @@ export class ProductManager {
             return "Producto no encontrado"
         }
     }
+
 }
